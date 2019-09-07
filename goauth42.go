@@ -11,6 +11,7 @@ type goauth42 struct {
 	Conf *oauth2.Config
 	Client *http.Client
 	Tok    *oauth2.Token;
+	Url string
 }
 
 var (
@@ -29,6 +30,7 @@ func Start(uid, secret, urls string, scope []string)(f goauth42) {
 		      RedirectURL:  urls,
 		      Endpoint: Endpoint42,
 	     }
+	f.Url = "https://api.intra.42.fr/";
 	return
  }
 
