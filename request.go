@@ -2,21 +2,32 @@ package goauth42
 
 import (
 	"net/http"
-	"io"
+	"encoding/json"
+	"bytes"
 )
 
-func (f *goauth42)Do(urls string, body io.Reader, types string) (resp *http.Response, err error){
-	r , err :=  http.NewRequest(types, urls, body);
+func (f *goauth42)Do(urls string, bodys interface{}, types string) (resp *http.Response, err error){
+	var body []byte
+	r := new(http.Request)
+	if bodys != nil {
+		body , err = json.Marshal(bodys);
+		if (err != nil) {
+			return
+		}
+	r , err =  http.NewRequest(types, urls, bytes.NewBuffer(body));
+	}else {
+		r , err =  http.NewRequest(types, urls, nil);
+	}
 	if err != nil{
 		return
 	}
-	if body != nil {
+	if bodys != nil {
 		r.Header.Set("Content-Type", "application/json")
 	}
 	return f.Client.Do(r);
 }
 
-func (f *goauth42)Post(url string, body io.Reader) (resp *http.Response, err error){
+func (f *goauth42)Post(url string, body interface{}) (resp *http.Response, err error){
 	return f.Do(url, body,"post");
 }
 
@@ -30,11 +41,11 @@ func (f *goauth42)Head(url string) (resp *http.Response, err error){
 	return f.Client.Head(url)
 }
 
-func (f *goauth42)Patch(url string, body io.Reader) (resp *http.Response, err error){
+func (f *goauth42)Patch(url string, body interface{}) (resp *http.Response, err error){
 		return f.Do(url, body,"patch");
 }
 
-func (f *goauth42)Put(url string, body io.Reader) (resp *http.Response, err error){
+func (f *goauth42)Put(url string, body interface{}) (resp *http.Response, err error){
 		return f.Do(url, body, "put");
 }
 
